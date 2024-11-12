@@ -1,3 +1,8 @@
+/* 変更される部分のカプセル化→メニューから返されるオブジェクトに対する反復処理が異なる
+  配列はlengthと配列のindexで取得
+  固定長の配列はgetメソッド、sizeメソッドで。（Java）
+  両方に対応できるようにするためには、hasNext(), next()メソッドで対応。
+*/
 
 interface Iterator {
   hasNext(): boolean;
@@ -8,13 +13,24 @@ class DinerMenuIterator implements Iterator {
   private items: MenuItem[] = [];
   private position: number = 0;
 
+  // 反復処理を行うメニュー項目の配列を受け取る
   constructor(items: MenuItem[]) {
     this.items = items;
   }
 
-  next(): MenuItem {
-    
+  public next(): MenuItem {
+    let menuItem: MenuItem;
+    menuItem = this.items[this.position];
+    this.position = this.position + 1;
     return menuItem;
+  }
+
+  public hasNext(): boolean {
+    if (this.position >= this.items.length || this.items[this.position] == null) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 
@@ -48,6 +64,28 @@ class MenuItem {
   }
 }
 
+class PancakeMenuIterator implements Iterator {
+  private items: MenuItem[] = [];
+  private position: number = 0;
+
+  constructor(items: MenuItem[]) {
+    this.items = items;
+  }
+
+  public next(): MenuItem {
+    let menuItem: MenuItem;
+    menuItem = this.items[this.position];
+    return menuItem;
+  }
+
+  public hasNext(): boolean {
+    if (this.position >= this.items.length || this.items[this.position] == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
 class PancakeHouseMenu {
   private menuItems: MenuItem[] = [];
 
@@ -60,8 +98,12 @@ class PancakeHouseMenu {
     this.menuItems.push(menuItem);
   }
 
-  public getMenuItems(): MenuItem[] {
-    return [...this.menuItems];
+  // public getMenuItems(): MenuItem[] {
+  //   return [...this.menuItems];
+  // }
+
+  public createIterator(): Iterator {
+    return new PancakeMenuIterator(this.menuItems);
   }
 }
 
@@ -84,31 +126,14 @@ class DinerMenu {
     }
   }
 
-  public getMenuItems(): MenuItem[] {
-    return this.menuItems;
+  // 内部実装を公開してしまうため利用しない
+  // public getMenuItems(): MenuItem[] {
+  //   return this.menuItems;
+  // }
+
+  // Iteratorインターフェースをレスポンス。クライアントはmenuItemsの持ち方やIteratorの実装方法は知らなくて良い。
+  // メニューの項目にアクセスするには、イテレータを使うだけ
+  public createIterator(): Iterator {
+    return new DinerMenuIterator(this.menuItems);
   }
-}
-
-const pancakeHouseMenu = new PancakeHouseMenu();
-const breakfastItems = pancakeHouseMenu.getMenuItems();
-
-const dinerMenu = new DinerMenu();
-const lunchItems = dinerMenu.getMenuItems();
-
-// 1. forEachを使った方法
-console.log("朝食メニュー:");
-breakfastItems.forEach(item => console.log(`  - ${item.getName()} (${item.getPrice()}円) `));
-
-console.log("ランチメニュー:");
-lunchItems.forEach(item => console.log(`  - ${item.getName()} (${item.getPrice()}円) `));
-
-// 2. forループを使った方法
-console.log("朝食メニュー:");
-for (const item of breakfastItems) {
-  console.log(`  - ${item.getName()} (${item.getPrice()}円) `);
-}
-
-console.log("ランチメニュー:");
-for (const item of lunchItems) {
-  console.log(`  - ${item.getName()} (${item.getPrice()}円) `);
 }
