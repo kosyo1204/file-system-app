@@ -137,3 +137,26 @@ class DinerMenu {
     return new DinerMenuIterator(this.menuItems);
   }
 }
+
+class Waitress {
+  private pancakeHouseMenu: PancakeHouseMenu;
+  private dinerMenu: DinerMenu;
+
+  constructor(pancakeHouseMenu: PancakeHouseMenu, dinerMenu: DinerMenu) {
+    this.pancakeHouseMenu = pancakeHouseMenu;
+    this.dinerMenu = dinerMenu;
+  }
+
+  private printMenu(iterator: Iterator): void {
+    while 
+  }
+
+  public printMenu(): void {
+    let pancakeIterator: Iterator;
+    let dinerIterator: Iterator;
+    pancakeIterator = this.pancakeHouseMenu.createIterator();
+    dinerIterator = this.dinerMenu.createIterator();
+    
+    this.printMenu(pancakeIterator);
+  }
+}
