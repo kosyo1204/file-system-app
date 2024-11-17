@@ -19,7 +19,7 @@ class File implements FileSystemItem {
   }
 }
 
-class Directory implements FileSystemItem {
+export class Directory implements FileSystemItem {
   private items: FileSystemItem[] = [];
 
   constructor(public name: string) {}
@@ -50,7 +50,7 @@ interface Command {
   undo(): void;
 }
 
-class CreateFileCommand implements Command {
+export class CreateFileCommand implements Command {
   private parentDir: Directory;
   private file: File;
 
@@ -68,25 +68,25 @@ class CreateFileCommand implements Command {
   }
 }
 
-class DeleteFileCommand implements Command {
-  private parentDir: Directory;
-  private file: FileSystemItem;
+// class DeleteFileCommand implements Command {
+//   private parentDir: Directory;
+//   private file: FileSystemItem;
 
-  constructor(parentDir: Directory, file: FileSystemItem) {
-    this.parentDir = parentDir;
-    this.file = file;
-  }
+//   constructor(parentDir: Directory, file: FileSystemItem) {
+//     this.parentDir = parentDir;
+//     this.file = file;
+//   }
 
-  execute(): void {
-    this.parentDir.remove(this.file);
-  }
+//   execute(): void {
+//     this.parentDir.remove(this.file);
+//   }
 
-  undo(): void {
-    this.parentDir.add(this.file);
-  }
-}
+//   undo(): void {
+//     this.parentDir.add(this.file);
+//   }
+// }
 
-class CommandManager {
+export class CommandManager {
   private undoStack: Command[] = [];
   private redoStack: Command[] = [];
 
@@ -111,26 +111,4 @@ class CommandManager {
       this.undoStack.push(command);
     }
   }
-}
-
-export function main() {
-  // Usage Example
-  const root = new Directory("root");
-  const commandManager = new CommandManager();
-
-  // Create some files and directories
-  const docs = new Directory("documents");
-  root.add(docs);
-
-  const createFileCmd = new CreateFileCommand(docs, "report.txt", 1024);
-  commandManager.execute(createFileCmd);
-
-  // Print the file system
-  root.print("");
-
-  // Undo the last operation
-  commandManager.undo();
-
-  // Print again to see the change
-  root.print("");
 }
