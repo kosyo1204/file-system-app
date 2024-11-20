@@ -1,10 +1,10 @@
 interface FileSystemItem {
   name: string;
   getSize(): number;
-  print(indent: string): void;
+  renderElement(): HTMLElement;
 }
 
-class File implements FileSystemItem {
+export class File implements FileSystemItem {
   constructor(
     public name: string,
     private size: number
@@ -14,15 +14,22 @@ class File implements FileSystemItem {
     return this.size;
   }
 
-  print(indent: string): void {
-    console.log(`${indent}📄 ${this.name} (${this.size} bytes)`);
+  renderElement(): HTMLElement {
+    const li = document.createElement('li');
+    li.textContent = `${this.name} (${this.size} bytes)`;
+    li.classList.add('file-name');
+    return li;
   }
 }
 
 export class Directory implements FileSystemItem {
   private items: FileSystemItem[] = [];
+  public element: HTMLElement;
 
-  constructor(public name: string) {}
+  constructor(public name: string) {
+    this.element = document.createElement('ul');
+    this.element.classList.add('directory');
+  }
 
   add(item: FileSystemItem): void {
     this.items.push(item);
@@ -39,9 +46,37 @@ export class Directory implements FileSystemItem {
     return this.items.reduce((sum, item) => sum + item.getSize(), 0);
   }
 
-  print(indent: string): void {
-    console.log(`${indent}📁 ${this.name}/`);
-    this.items.forEach(item => item.print(indent + "  "));
+  // renderElement(): HTMLElement {
+  //   const li = document.createElement('li');
+  //   const dirNameSpan = document.createElement('span');
+  //   dirNameSpan.textContent = `${this.name} (${this.getSize()} bytes)`;
+  //   dirNameSpan.classList.add('directory-name');
+  //   li.appendChild(dirNameSpan);
+  //   li.appendChild(this.element);
+  //   return li;
+  // }
+
+  renderElement(): HTMLElement {
+    const li = document.createElement('li');
+    const dirNameSpan = document.createElement('span');
+    dirNameSpan.textContent = `${this.name} (${this.getSize()} bytes)`;
+    dirNameSpan.classList.add('directory-name');
+    li.appendChild(dirNameSpan);
+  
+    // Append child elements to `this.element` directly
+    this.items.forEach(item => this.element.appendChild(item.renderElement()));
+  
+    li.appendChild(this.element);
+    return li;
+  }
+}
+
+export class FileSystemRenderer {
+  constructor(private container: HTMLElement) {}
+
+  render(rootDirectory: Directory): void {
+    const rootElement = rootDirectory.renderElement();
+    this.container.appendChild(rootElement);
   }
 }
 

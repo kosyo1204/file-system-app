@@ -5,9 +5,26 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FileSystemApp</title>
+    <style>
+      .directory {
+          list-style-type: none;
+          padding-left: 20px;
+      }
+      .directory > li {
+          margin: 5px 0;
+      }
+      .directory-name::before {
+          content: '📁 ';
+          margin-right: 5px;
+      }
+      .file-name::before {
+          content: '📄 ';
+          margin-right: 5px;
+      }
+  </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="fileSystemContainer"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
